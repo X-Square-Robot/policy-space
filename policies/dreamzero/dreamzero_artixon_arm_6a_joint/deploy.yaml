@@ -1,0 +1,121 @@
+# Policy Space deployment config: DreamZero X2Robot
+#
+# Used by: policy-space serve policies/dreamzero/dreamzero_artixon_arm_6a_joint/deploy.yaml
+# Loads: policies/dreamzero/dreamzero_artixon_arm_6a_joint/model.py::Model
+policy_name: dreamzero_x2robot
+
+model:
+  module: policy_space.dreamzero_x2robot.model
+  class: Model
+  cfg:
+    # Required unless DREAMZERO_ROOT is set.
+    dreamzero_root: ""
+    # Required unless DREAMZERO_CHECKPOINT_PATH is set.
+    checkpoint_path: ""
+    tokenizer_path: "checkpoints/umt5-xxl"
+    embodiment_tag: "x2robot_dreamzero_dual_arm_joint"
+    device: "cuda:0"
+    inference_method: "lazy_joint_forward_causal"
+    # Keep the trained causal cursor and execute the complete predicted block.
+    # Replanning every six steps from a single frame regresses the ID policy;
+    # real observations are fed back continuously by the ManaEnv client.
+    replan_context_mode: "causal"
+    execute_horizon: 24
+    skip_img_transform: false
+    action_horizon: 24
+    output_action_dim: 26
+    # GrootSimPolicy.unapply() already converts the checkpoint's relative joint
+    # predictions back to absolute targets. Do not add the current joints again
+    # in the PolicySpace wrapper.
+    relative_actions: false
+    image_resolution: [176, 320]
+    history_window: 25
+    relative_offsets: [-24, -21, -18, -15, -12, -9, -6, -3, 0]
+    require_instruction: true
+    instruction: ""
+    # DreamZero always predicts video latents jointly with actions. Set this
+    # debug-only switch to true to decode one MP4 per camera at episode reset.
+    # Keeping it false avoids the latent D2H copy and VAE decode on live runs.
+    # DREAMZERO_SAVE_VIDEO_PRED=1 overrides this without editing the YAML.
+    save_video_pred: false
+    video_output_dir: "/tmp/dreamzero_x2robot_video_pred"
+    video_fps: 15
+    camera_map:
+      camera_front: "video.face"
+      camera_left: "video.left_wrist"
+      camera_right: "video.right_wrist"
+    gripper_debounce:
+      # Disable server-side gripper post-processing for the current evaluation
+      # ablation. The mode and tuning below stay intact for a one-line rollback.
+      enabled: false
+      # DreamZero was trained with continuous normalized gripper joints. Keep
+      # graded closing targets instead of turning 0.15-0.35 into a binary hold:
+      # that old dead band could leave the gripper fully open beside an object.
+      # Keep the production default continuous. The optional
+      # ``continuous_hysteresis`` mode requires task-independent live tuning;
+      # a 0.75 release gate locked one working gripper closed for a full
+      # 1,200-step spoon episode.
+      mode: continuous_slew
+      close_threshold: 0.15
+      open_threshold: 0.35
+      min_stable_steps: 3
+      closed_target: 0.0
+      open_target: 1.0
+      # A full close takes at most five 20 Hz commands (0.25 s), so grasp
+      # timing is not delayed. Opening is gentler; tiny same-state fluctuations
+      # are held and intermediate targets are preserved.
+      deadband: 0.02
+      ema_alpha: 0.65
+      max_close_delta_per_step: 0.20
+      max_open_delta_per_step: 0.10
+      # Once a close target reaches the closed region, reject partial reopen
+      # pulses until the policy predicts an explicit release for four
+      # consecutive executed commands. This keeps slender objects secured
+      # without delaying the initial close motion.
+      release_threshold: 0.75
+      release_stable_steps: 4
+      # Legacy binary_slew compatibility; unused by continuous_slew.
+      max_delta_per_step: 0.06
+    # Match DreamZero's action conditioning without shortening H24: 2x linear
+    # interpolation, Savitzky-Golay smoothing, then downsample to 24 commands.
+    # A six-command prefix connects each new block to the last command while
+    # leaving gripper transitions to the discrete debounce state machine.
+    action_smoothing:
+      enabled: true
+      interpolation_multiplier: 2
+      window_length: 7
+      polyorder: 2
+      boundary_blend_steps: 6
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: exclusive
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_joint@1
+      action_schema: bimanual_joint_position_26d@1
+      embodiment_constraints: [ex001_6r@1]
+  protocol: policy_space
+  embodiment: ArtiXon Arm-6A
+  # ArtiXon Arm-6A JointActionsCfg is 26-D; only the first 14 physical joint slots
+  # are predicted, and the 12 master-EE recording slots are zero-padded.
+  action_dim: 26
+  action_mode: joint_position
+  action_horizon: 24
+  # Optional Policy Space execution hints. The execute horizon is reported
+  # dynamically by Model.runtime_metadata() so launcher overrides such as
+  # DREAMZERO_EXECUTE_HORIZON=8 cannot disagree with the handshake.
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: true
+  # See the same key in policies/wallx/wall_oss_05_artixon_arm_6a_eef/deploy.yaml for the
+  # full contract. This checkpoint trains on the lerobot_v2 joint dataset whose
+  # gripper channels are pre-normalized to [0, 1] (verified against
+  # meta/stats.json: action/state dims 6 and 13 both span exactly 0.0-1.0), so
+  # ManaEnv must scale to the selected variant's radians before execution.
+  #
+  # The ``gripper_debounce`` thresholds below (0.15 / 0.35) stay in [0, 1] space
+  # on purpose: debouncing runs inside this model server, upstream of the unit
+  # conversion, which happens on the ManaEnv side.
+  gripper_convention: normalized_01

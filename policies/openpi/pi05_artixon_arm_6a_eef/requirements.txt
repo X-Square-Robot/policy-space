@@ -1,0 +1,6 @@
+# Run this integration from OpenPI's own uv environment. These are the
+# lightweight PolicySpace server dependencies that must also be present there.
+numpy
+scipy
+msgpack
+websockets

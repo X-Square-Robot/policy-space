@@ -1,0 +1,43 @@
+{
+  "protocol": "dreamzero-x2robot",
+  "model_contract_version": 1,
+  "checkpoint_id": "REPLACE_WITH_TRAINING_RUN_ID",
+  "embodiment_tag": "REPLACE_WITH_REGISTERED_EMBODIMENT_TAG",
+  "action_space": "x2_bimanual_ee_init_relative",
+  "action_dim": 14,
+  "wire_pose_reference": "init_ee_pose",
+  "rotation": "euler_xyz",
+  "translation_relative_frame": "robot_root",
+  "rotation_composition": "relative_left_multiply",
+  "model_chunk_size": 24,
+  "model_fps": 30,
+  "history_owner": "client",
+  "relative_action_precomputed": true,
+  "dreamzero_relative_action": false,
+  "state_space": "x2_bimanual_ee_root_absolute",
+  "training_config_sha256": "REPLACE_WITH_SHA256",
+  "normalization_stats_sha256": "REPLACE_WITH_SHA256",
+  "image_size": [480, 640],
+  "video_keys": {
+    "observation/head_image": "video.top_head",
+    "observation/left_wrist_image": "video.hand_left",
+    "observation/right_wrist_image": "video.hand_right"
+  },
+  "state_fields": [
+    {"wire_key": "observation/left_eef", "wire_slice": [0, 3], "model_key": "state.left_eef_position"},
+    {"wire_key": "observation/left_eef", "wire_slice": [3, 6], "model_key": "state.left_eef_rotation"},
+    {"wire_key": "observation/left_eef", "wire_slice": [6, 7], "model_key": "state.left_gripper"},
+    {"wire_key": "observation/right_eef", "wire_slice": [0, 3], "model_key": "state.right_eef_position"},
+    {"wire_key": "observation/right_eef", "wire_slice": [3, 6], "model_key": "state.right_eef_rotation"},
+    {"wire_key": "observation/right_eef", "wire_slice": [6, 7], "model_key": "state.right_gripper"}
+  ],
+  "action_fields": [
+    {"model_key": "action.left_eef_position", "wire_slice": [0, 3]},
+    {"model_key": "action.left_eef_rotation", "wire_slice": [3, 6]},
+    {"model_key": "action.left_gripper", "wire_slice": [6, 7]},
+    {"model_key": "action.right_eef_position", "wire_slice": [7, 10]},
+    {"model_key": "action.right_eef_rotation", "wire_slice": [10, 13]},
+    {"model_key": "action.right_gripper", "wire_slice": [13, 14]}
+  ],
+  "language_key": "annotation.language.action_text"
+}

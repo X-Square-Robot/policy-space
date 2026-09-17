@@ -1,0 +1,34 @@
+# OpenPI Pi0.5 split280 joint-space deployment.
+policy_name: openpi_pi05_x2real_joint
+
+model:
+  module: policies.openpi.pi05_artixon_arm_6a_joint.model
+  class: Model
+  cfg:
+    openpi_root: ""
+    checkpoint_path: ""
+    train_config: pi05_x2real_split280
+    device: cuda:0
+    action_horizon: 32
+    instruction: ""
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_joint@1
+      action_schema: bimanual_joint_position@1
+      embodiment_constraints: [ex001_6r@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: ArtiXon Arm-6A
+  action_mode: joint_position
+  action_type: absolute_joint
+  action_dim: 14
+  physical_action_dim: 14
+  action_horizon: 32
+  gripper_convention: normalized_01
+  recommended_ingest_observation_each_step: false

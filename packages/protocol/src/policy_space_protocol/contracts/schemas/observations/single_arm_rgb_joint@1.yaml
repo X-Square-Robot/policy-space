@@ -1,0 +1,7 @@
+id: single_arm_rgb_joint@1
+fields:
+  images: {roles: [exterior_1, exterior_2, wrist], dtype: uint8, shape: [height, width, 3]}
+  state:
+    joint_position: {shape: [7], dtype: float32}
+    gripper_position: {shape: [1], dtype: float32}
+optional_fields: [instruction, step, episode_id]

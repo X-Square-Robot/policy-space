@@ -1,0 +1,3 @@
+# Use the checkpoint's existing LeRobot/SmolVLA environment.
+numpy>=1.24
+torch>=2.7

@@ -1,0 +1,14 @@
+# DreamZero-DROID SDK policy (policy_space/dreamzero) — client-side deps only.
+#
+# This policy is a THIN WebSocket client: it does NOT load the DreamZero model,
+# groot, torch, or any CUDA stack in-process (the dreamzero server owns those,
+# in its own conda env — see 3rd/dreamzero/pyproject.toml). It only needs the
+# openpi_client msgpack codec + websockets transport + numpy/opencv for array
+# shaping. Pinned here for a standalone `pip install -r requirements.txt` of
+# just this policy's client side.
+numpy>=1.21
+websockets>=12.0
+openpi-client==0.1.1     # DreamZero wire codec (msgpack_numpy) + WebsocketClientPolicy
+msgpack>=1.0             # pulled in by openpi-client; pinned for clarity
+msgpack-numpy>=0.4.8
+opencv-python>=4.5       # client-side frame resize to the server's image_resolution

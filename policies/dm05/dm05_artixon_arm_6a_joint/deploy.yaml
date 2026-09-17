@@ -1,0 +1,34 @@
+# DM0.5 X2Real thin gateway. OpenDM and the checkpoint stay on the GPU server.
+policy_name: dm05_x2real
+
+model:
+  class: Model
+  cfg:
+    backend_url: "http://127.0.0.1:8002/v1/infer"
+    connect_timeout_seconds: 30
+    read_timeout_seconds: 30
+    checkpoint_id: ""
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_joint@1
+      action_schema: bimanual_joint_position_26d@1
+      embodiment_constraints: [ex001_6r@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: ArtiXon Arm-6A
+  action_mode: joint_position
+  action_dim: 26
+  physical_action_dim: 14
+  action_horizon: 50
+  action_type: absolute_joint
+  action_fps: 20
+  gripper_convention: normalized_01
+  recommended_execute_horizon: 50
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: false

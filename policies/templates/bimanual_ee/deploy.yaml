@@ -1,0 +1,30 @@
+# PolicySpace deployment config: local hold-position stand-in for smoke tests.
+# Declares the ArtiXon Arm-6A desktop ik_eef_abs contract so a client probe can
+# persist a real actionMode.
+policy_name: example_policy
+
+model:
+  module: policy_space.example_policy.model
+  class: Model
+  cfg:
+    action_dim: 14
+    action_horizon: 32
+    gain: 0.0
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_ee@1
+      action_schema: bimanual_ee_absolute@1
+      embodiment_constraints: [ex001_6r@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: ArtiXon Arm-6A
+  action_mode: ik_eef_abs
+  action_dim: 14
+  action_horizon: 32
+  action_type: absolute_ee

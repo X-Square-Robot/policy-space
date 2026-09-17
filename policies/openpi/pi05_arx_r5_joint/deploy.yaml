@@ -1,0 +1,35 @@
+# OpenPI Pi0.5 ARX R5 joint-space deployment.
+policy_name: openpi_pi05_arx_r5_joint
+
+model:
+  module: policies.openpi.pi05_arx_r5_joint.model
+  class: Model
+  cfg:
+    openpi_root: ""
+    checkpoint_path: ""
+    train_config: pi05_arx_r5_joint
+    device: cuda:0
+    action_horizon: 32
+    instruction: ""
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_joint@1
+      action_schema: bimanual_joint_position@1
+      embodiment_constraints: [arx_r5@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: arx_r5
+  action_mode: joint_position
+  action_type: absolute_joint
+  action_dim: 14
+  physical_action_dim: 14
+  action_horizon: 32
+  gripper_convention: normalized_01
+  recommended_ingest_observation_each_step: false
+  recommended_connect_chunks: true

@@ -1,0 +1,6 @@
+id: bimanual_joint_position@1
+response_key: actions
+action_dim: 14
+dtype: float32
+representation: absolute_joint_position
+layout: [left_arm_6, left_gripper_1, right_arm_6, right_gripper_1]

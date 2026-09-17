@@ -1,0 +1,8 @@
+# Policy_space content is tracked and shipped with the repo.
+# Only local Python caches are ignored.
+__pycache__/
+*.pyc
+build/
+dist/
+*.egg-info/
+.pytest_cache/

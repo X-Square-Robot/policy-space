@@ -1,0 +1,7 @@
+id: bimanual_rgb_ee@1
+fields:
+  images: {roles: [camera_front, camera_left, camera_right], dtype: uint8, shape: [height, width, 3]}
+  state:
+    follow1_pos: {shape: [7], dtype: float32, layout: [xyz_3, euler_xyz_3, gripper_1]}
+    follow2_pos: {shape: [7], dtype: float32, layout: [xyz_3, euler_xyz_3, gripper_1]}
+optional_fields: [instruction, step, episode_id]

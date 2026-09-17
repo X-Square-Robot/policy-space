@@ -1,0 +1,75 @@
+# Policy Space deployment config: Wall-X bimanual EE
+#
+# Launch: policy-space serve policies/wallx/wall_oss_05_artixon_arm_6a_eef/deploy.yaml --port 8001
+#
+# The model is loaded directly in this process — no separate wallx server needed.
+# Set WALLX_CHECKPOINT_PATH env var or checkpoint_path below.
+#
+# ``policy_name`` stays ``wallx``: it is the wire identity PolicySpaceImpl checks
+# against ``policy/wallx_ps@v1.0.0.yaml``, not the directory name.
+policy_name: wallx
+
+model:
+  module: policy_space.wallx_wall_oss_05.model
+  class: Model
+  cfg:
+    # Required unless WALLX_ROOT is set.
+    wallx_root: ""
+    # Required: path to wallx checkpoint (or set WALLX_CHECKPOINT_PATH env var)
+    checkpoint_path: ""
+    robot_type: "desktop"
+    robot_id: "10158"
+    norm_key: "ex_normal"
+    action_dim: 26
+    action_horizon: 32
+    num_inference_timesteps: 10
+    # Native WallX actions are sampled at 20 Hz: 32 rows span 1.60 s. The
+    # client interpolates them into 48 simulator commands at 30 Hz, preserving
+    # the same 1.60 s span. This value describes the native RTC model rate; it
+    # must not override the simulator's post-interpolation execution rate.
+    control_rate_hz: 20
+    model_device: "cuda"
+    image_passing_mode: "base64"
+    robot_action_start_ratio: 0.0
+    robot_action_end_ratio: 1.0
+    robot_action_interpolate_multiplier: 70
+    instruction: ""
+    # Lossless by default: JPEG95 changes pixels and breaks train/infer parity.
+    # Set WALLX_IMAGE_WIRE_ENCODING=jpeg95 only for legacy comparisons.
+    image_wire_encoding: "lossless_png"
+    jpeg_quality: 95
+    # CFG (optional, default off)
+    cfg_scale: 1.0
+    # cfg_uncond_instruction: null
+    # cfg_uncond_metadata: null
+    # cfg_drop: null
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_ee@1
+      action_schema: bimanual_ee_absolute@1
+      embodiment_constraints: [ex001_6r@1]
+  action_dim: 14
+  action_mode: "ik_eef_abs"
+  action_horizon: 33
+  # Unit contract for the gripper channel, declared once per model.
+  #
+  # ``normalized_01``: this checkpoint was trained on gripper values the dataset
+  # builder pre-divided by the source robot's gripper scale, so it emits and
+  # expects [0, 1] (0 = closed, 1 = fully open). ManaEnv converts to and from the
+  # selected embodiment's native units (ArtiXon Arm-6A drive-joint radians: H 5.717175,
+  # G 1.89) on both the action and the observation path.
+  #
+  # ``raw``: the model already speaks sim units — set this for checkpoints trained
+  # on non-normalized data that already carry per-gripper norm_stats and therefore
+  # do not need the [0, 1] workaround.
+  #
+  # Getting this wrong is silent in one direction: an unconverted [0, 1] command
+  # is a legal radian value that the action term clamps without complaint, and the
+  # gripper simply never opens past ~18% of travel.
+  gripper_convention: normalized_01

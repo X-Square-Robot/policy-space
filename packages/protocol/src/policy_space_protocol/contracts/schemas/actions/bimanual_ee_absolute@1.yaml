@@ -1,0 +1,8 @@
+id: bimanual_ee_absolute@1
+response_key: actions
+action_dim: 14
+dtype: float32
+representation: absolute_end_effector_pose
+pose_reference: episode_initial_end_effector_pose
+rotation: euler_xyz
+layout: [left_xyz_3, left_rpy_3, left_gripper_1, right_xyz_3, right_rpy_3, right_gripper_1]

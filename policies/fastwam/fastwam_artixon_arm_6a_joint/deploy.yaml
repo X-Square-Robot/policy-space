@@ -1,0 +1,43 @@
+policy_name: fastwam_x2robot
+
+model:
+  class: Model
+  cfg:
+    fastwam_root: ""
+    training_config_path: ""
+    checkpoint_path: ""
+    dataset_stats_path: ""
+    device: "cuda:0"
+    mixed_precision: bf16
+    action_horizon: 32
+    num_video_frames: 9
+    num_inference_steps: 10
+    seed: 42
+    rand_device: cpu
+    text_cfg_scale: 1.0
+    negative_prompt: ""
+    tiled: false
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: exclusive
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_joint@1
+      action_schema: bimanual_joint_position_26d@1
+      embodiment_constraints: [ex001_6r@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: ArtiXon Arm-6A
+  action_mode: joint_position
+  action_dim: 26
+  physical_action_dim: 14
+  action_horizon: 32
+  action_type: absolute_joint
+  action_fps: 20
+  gripper_convention: normalized_01
+  recommended_execute_horizon: 32
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: false

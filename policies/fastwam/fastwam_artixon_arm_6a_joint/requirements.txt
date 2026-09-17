@@ -1,0 +1,6 @@
+numpy>=1.24
+Pillow>=10
+torch
+hydra-core
+omegaconf
+# Install the matching FastWAM checkout separately and set FASTWAM_ROOT.

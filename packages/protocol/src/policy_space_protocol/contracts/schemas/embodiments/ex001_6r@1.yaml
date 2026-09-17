@@ -1,0 +1,4 @@
+id: ex001_6r@1
+capabilities: [bimanual, dual_gripper, three_rgb_cameras]
+supported_observation_schemas: [bimanual_rgb_joint@1, bimanual_rgb_ee@1]
+supported_action_schemas: [bimanual_joint_position@1, bimanual_joint_position_26d@1, bimanual_ee_absolute@1]

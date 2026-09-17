@@ -1,0 +1,31 @@
+# Hold-position stand-in for Franka Panda / DROID PolicySpace (8-D joint).
+# Same public wire as cosmos3_droid; this one does not load Cosmos.
+#
+#   policy-space serve policies/templates/franka_joint/deploy.yaml \
+#     --host 127.0.0.1 --port 8002
+policy_name: example_franka_policy
+
+model:
+  class: Model
+  cfg:
+    action_dim: 8
+    action_horizon: 24
+    gain: 0.0
+
+server:
+  host: "0.0.0.0"
+  port: 8002
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: single_arm_rgb_joint@1
+      action_schema: single_arm_joint_position@1
+      embodiment_constraints: [franka@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: franka
+  action_mode: joint_position
+  action_dim: 8
+  action_horizon: 24
+  action_type: absolute_joint

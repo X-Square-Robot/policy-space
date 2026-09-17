@@ -1,0 +1,31 @@
+image: python:3.11-slim
+
+default:
+  interruptible: true
+
+stages:
+  - test
+  - build
+
+test:
+  stage: test
+  script:
+    - python -m pip install --upgrade pip
+    - python -m pip install -e packages/protocol -e ".[test]"
+    - python -m pytest -q
+
+build:
+  stage: build
+  script:
+    - python -m pip install --upgrade pip build
+    - python -m build
+    - python -m build packages/protocol
+    - python -m venv /tmp/policy-space-wheel
+    - /tmp/policy-space-wheel/bin/pip install packages/protocol/dist/policy_space_protocol-*.whl
+    - /tmp/policy-space-wheel/bin/pip install dist/policy_space-*.whl
+    - cd /tmp
+    - /tmp/policy-space-wheel/bin/python -c "import policy_space, policy_space_protocol; print(policy_space.__version__, policy_space_protocol.__version__)"
+  artifacts:
+    paths:
+      - dist/
+      - packages/protocol/dist/

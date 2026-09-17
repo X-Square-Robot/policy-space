@@ -1,0 +1,36 @@
+policy_name: openpi_pi05_arx_ee
+
+model:
+  class: Model
+  cfg:
+    openpi_root: ""
+    checkpoint_path: ""
+    action_horizon: 32
+    instruction: ""
+
+server:
+  host: 0.0.0.0
+  port: 8001
+  session_mode: exclusive
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_ee@1
+      action_schema: bimanual_ee_absolute@1
+      embodiment_constraints: [arx_r5@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: arx_r5
+  action_mode: ik_eef_abs
+  action_type: absolute_ee
+  action_dim: 14
+  action_horizon: 32
+  action_fps: 20
+  model_action_dim: 32
+  valid_action_dim: 14
+  model_rotation: euler_xyz
+  wire_pose_reference: init_ee_pose
+  gripper_convention: normalized_01
+  recommended_execute_horizon: 32
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: false

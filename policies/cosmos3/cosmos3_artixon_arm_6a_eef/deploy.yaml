@@ -1,0 +1,34 @@
+# PolicySpace deployment config: Cosmos3 X2Robot bimanual EE
+policy_name: cosmos3_x2robot
+
+model:
+  module: policy_space.cosmos3_x2robot.model
+  class: Model
+  cfg:
+    server_address: "127.0.0.1"
+    server_port: 8002
+    timeout_seconds: 120.0
+    instruction: ""
+    require_instruction: true
+    model_chunk_size: 32
+    model_fps: 15.0
+    control_fps: 30.0
+    require_server_metadata: true
+    camera_map:
+      camera_front: "observation/head_image"
+      camera_left: "observation/left_wrist_image"
+      camera_right: "observation/right_wrist_image"
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_ee@1
+      action_schema: bimanual_ee_absolute@1
+      embodiment_constraints: [ex001_6r@1]
+  action_dim: 14
+  action_mode: ik_eef_abs
+  action_horizon: 65
