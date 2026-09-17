@@ -1,0 +1,41 @@
+policy_name: cosmos3_franka
+
+model:
+  class: Model
+  cfg:
+    framework_path: ""
+    checkpoint_path: ""
+    qwen_tokenizer_path: ""
+    output_dir: ""
+    instruction: ""
+    require_instruction: true
+    model_action_horizon: 32
+    action_horizon: 24
+    camera_map:
+      wrist: "observation/wrist_image_left"
+      exterior_1: "observation/exterior_image_1_left"
+      exterior_2: "observation/exterior_image_2_left"
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: exclusive
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: single_arm_rgb_joint@1
+      action_schema: single_arm_joint_position@1
+      embodiment_constraints: [franka@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: franka
+  action_mode: joint_position
+  action_dim: 8
+  physical_action_dim: 8
+  action_horizon: 24
+  action_type: absolute_joint
+  action_fps: 20
+  gripper_convention: raw
+  recommended_execute_horizon: 24
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: false

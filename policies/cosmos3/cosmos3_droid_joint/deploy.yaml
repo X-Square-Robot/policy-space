@@ -1,0 +1,47 @@
+# Policy Space deployment config: Cosmos3-Nano-Policy-DROID
+#
+# Start with: policy-space serve policies/cosmos3/cosmos3_droid_joint/deploy.yaml
+policy_name: cosmos3_droid
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: exclusive
+
+model:
+  module: policy_space.cosmos3_droid.model
+  class: Model
+  cfg:
+    # Required unless COSMOS_ROOT is set.
+    cosmos_root: ""
+    checkpoint_path: "nvidia/Cosmos3-Nano-Policy-DROID"
+    domain_name: "droid_lerobot"
+    action_space: "joint_pos"
+    action_dim: 8
+    action_chunk_size: 16
+    image_height: 180
+    image_width: 320
+    guidance: 1.0
+    num_steps: 10
+    shift: 1.0
+    conditioning_fps: 15.0
+    use_state: true
+    history_length: 1
+    seed: 42
+    deterministic_seed: false
+    instruction: ""
+    camera_map:
+      wrist: "observation/wrist_image_left"
+      exterior_1: "observation/exterior_image_1_left"
+      exterior_2: "observation/exterior_image_2_left"
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: single_arm_rgb_joint@1
+      action_schema: single_arm_joint_position@1
+      embodiment_constraints: [droid@1]
+  protocol: policy_space
+  embodiment: droid
+  action_dim: 8
+  action_mode: joint_position
+  action_horizon: 16

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "policy-space-protocol"
+version = "0.3.0"
+description = "Lightweight Policy Space protocol and contract definitions"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"policy_space_protocol.contracts" = ["schemas/*/*.yaml"]

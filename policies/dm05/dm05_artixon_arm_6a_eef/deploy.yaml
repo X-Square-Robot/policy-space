@@ -1,0 +1,36 @@
+policy_name: dm05_x2real_ee
+
+model:
+  class: Model
+  cfg:
+    backend_url: "http://127.0.0.1:8002/v1/infer"
+    timeout_seconds: 180
+    checkpoint_id: ""
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_ee@1
+      action_schema: bimanual_ee_absolute@1
+      embodiment_constraints: [ex001_6r@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: ArtiXon Arm-6A
+  action_mode: ik_eef_abs
+  action_dim: 14
+  physical_action_dim: 16
+  action_horizon: 32
+  action_type: absolute_ee
+  action_fps: 20
+  gripper_convention: normalized_01
+  model_action_dim: 20
+  model_rotation: rot6d_row
+  wire_rotation: euler_xyz
+  wire_pose_reference: init_ee_pose
+  recommended_execute_horizon: 32
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: false

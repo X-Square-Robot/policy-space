@@ -1,0 +1,11 @@
+id: mobile_semantic_20d@1
+response_key: action_chunk
+action_dim: 20
+dtype: float32
+representation: ex001_whole_body_end_effector_delta
+wire_schema: manaenv_ex001_wholebody_policy_wire_20d_v1
+pose_reference: init_ee_pose
+rotation: euler_xyz
+gripper_convention: normalized_01
+base_representation: vx_vy_yaw_rate
+layout: [left_ee_delta_6, left_gripper_1, right_ee_delta_6, right_gripper_1, base_vx_vy_yaw_3, lift_1, head_2]

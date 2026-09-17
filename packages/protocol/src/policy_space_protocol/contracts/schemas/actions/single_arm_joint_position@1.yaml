@@ -1,0 +1,6 @@
+id: single_arm_joint_position@1
+response_key: actions
+action_dim: 8
+dtype: float32
+representation: absolute_joint_position
+layout: [arm_7, gripper_1]

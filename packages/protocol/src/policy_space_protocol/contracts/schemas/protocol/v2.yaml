@@ -1,0 +1,4 @@
+protocol: policy_space
+protocol_version: 2
+lifecycle: [initialize_episode, ingest_observation, infer_actions, finalize_episode]
+session_modes: [exclusive, multiplexed_serial]

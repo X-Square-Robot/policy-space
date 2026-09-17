@@ -1,0 +1,4 @@
+id: ex001_mobile@1
+capabilities: [bimanual, dual_gripper, mobile_base, lift, head]
+supported_observation_schemas: [mobile_bimanual_rgb@1]
+supported_action_schemas: [mobile_semantic_20d@1]

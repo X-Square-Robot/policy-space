@@ -1,0 +1,10 @@
+id: mobile_bimanual_rgb@1
+fields:
+  images: {roles: [face_view, left_wrist_view, right_wrist_view], dtype: uint8, shape: [height, width, 3]}
+  state:
+    follow1_pos: {shape: [7], dtype: float32}
+    follow2_pos: {shape: [7], dtype: float32}
+    velocity_decomposed_odom: {shape: [3], dtype: float32}
+    lift: {shape: [1], dtype: float32}
+    head_pos: {shape: [2], dtype: float32}
+optional_fields: [instruction, step, episode_id]

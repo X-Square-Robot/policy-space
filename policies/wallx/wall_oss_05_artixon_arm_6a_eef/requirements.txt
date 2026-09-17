@@ -1,0 +1,13 @@
+# Wall-X wall-oss-0.5 policy — client-side dependencies only.
+#
+# This policy is a thin WebSocket client: it does NOT load the wall_x model or
+# any CUDA/torch stack in-process (the wall_x server owns those). It only needs
+# the msgpack/websocket transport + numpy for array handling. All of these are
+# already required by manaenv itself (manaenv.policy.server_client), so a normal
+# manaenv install already satisfies them — they are pinned here for a standalone
+# `pip install -r requirements.txt` of just this policy.
+numpy>=1.21
+websockets>=10.0
+msgpack>=1.0
+msgpack-numpy>=0.4.8
+opencv-python>=4.5   # lossless PNG / legacy JPEG image encoding (cv2.imencode)

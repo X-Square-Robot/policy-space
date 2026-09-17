@@ -1,0 +1,49 @@
+# Policy Space deployment config: DreamZero DROID single-arm
+#
+# Used by: policy-space serve policies/dreamzero/dreamzero_droid_joint/deploy.yaml
+# Loads: policies/dreamzero/dreamzero_droid_joint/model.py::Model
+policy_name: dreamzero_droid
+
+model:
+  module: policy_space.dreamzero_droid.model
+  class: Model
+  cfg:
+    # Required unless DREAMZERO_ROOT is set.
+    dreamzero_root: ""
+    checkpoint_path: "checkpoints/DreamZero-DROID-fixed"
+    tokenizer_path: "checkpoints/umt5-xxl"
+    embodiment_tag: "oxe_droid"
+    device: "cuda:0"
+    inference_method: "lazy_joint_forward_causal"
+    skip_img_transform: false
+    instruction: ""
+    image_resolution: [180, 320]
+    history_window: 24
+    relative_offsets: [-23, -16, -8, 0]
+    external_camera_2_mode: "right"
+    camera_map:
+      exterior_1: "video.exterior_image_1_left"
+      exterior_2: "video.exterior_image_2_left"
+      wrist: "video.wrist_image_left"
+
+server:
+  host: "0.0.0.0"
+  # 可通过 `policy-space serve ... --port PORT` 覆盖。
+  port: 8001
+  session_mode: exclusive
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: single_arm_rgb_joint@1
+      action_schema: single_arm_joint_position@1
+      embodiment_constraints: [droid@1]
+  protocol: policy_space
+  embodiment: droid
+  action_dim: 8
+  action_mode: joint_position
+  # 24 is what the model actually returns (probed: 24x8). This block is only
+  # the wire declaration the server echoes on connect — model.py never reads
+  # it — so a wrong value here doesn't break inference, it just makes client
+  # embodiment matching report a mismatch against a model that is in fact
+  # correct.
+  action_horizon: 24

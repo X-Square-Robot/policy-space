@@ -1,0 +1,3 @@
+numpy>=1.24
+# Install the matching cosmos-framework checkout separately and set
+# COSMOS3_FRAMEWORK. Its lockfile owns the CUDA/PyTorch dependencies.

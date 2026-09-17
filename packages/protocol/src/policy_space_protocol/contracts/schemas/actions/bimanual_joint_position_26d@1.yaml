@@ -1,0 +1,7 @@
+id: bimanual_joint_position_26d@1
+response_key: actions
+action_dim: 26
+dtype: float32
+representation: absolute_joint_position_with_auxiliary_channels
+physical_action_dim: 14
+layout: [left_arm_6, left_gripper_1, right_arm_6, right_gripper_1, auxiliary_12]

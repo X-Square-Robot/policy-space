@@ -1,0 +1,7 @@
+# Client-side deps for policy_space/cosmos3 (thin WebSocket client only).
+# The 16B Cosmos3 world model is NOT loaded here — it runs on the server
+# (cosmos-framework, Docker/uv/CUDA). These are just the wire-codec deps and
+# normally already present in a dedicated conda env (e.g. the 'dreamzero' env).
+openpi-client
+websockets
+numpy

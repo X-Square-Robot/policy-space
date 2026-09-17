@@ -1,0 +1,43 @@
+policy_name: smolvla_franka
+
+model:
+  class: Model
+  cfg:
+    project_path: ""
+    checkpoint_path: ""
+    instruction: ""
+    require_instruction: true
+    device: "cuda"
+    action_dim: 8
+    action_horizon: 50  # Native checkpoint chunk.
+    interpolation_multiplier: 1.5
+    camera_map:
+      wrist: "observation.images.camera1"
+      exterior_1: "observation.images.camera2"
+      exterior_2: "observation.images.camera3"
+
+server:
+  host: "0.0.0.0"
+  port: 8001
+  session_mode: multiplexed_serial
+
+metadata:
+  supported_schema_pairs:
+    - observation_schema: single_arm_rgb_joint@1
+      action_schema: single_arm_joint_position@1
+      embodiment_constraints: [franka@1]
+  protocol: policy_space
+  protocol_version: "2"
+  embodiment: franka
+  action_mode: joint_position
+  action_dim: 8
+  physical_action_dim: 8
+  action_horizon: 75  # Already interpolated by the model adapter.
+  action_type: absolute_joint
+  action_fps: 30
+  # The adapter converts model opening to Franka wire closure in both directions.
+  # Keep raw: ManaEnv must not apply another gripper conversion.
+  gripper_convention: raw
+  recommended_execute_horizon: 75
+  recommended_connect_chunks: false
+  recommended_ingest_observation_each_step: false
