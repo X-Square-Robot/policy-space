@@ -107,7 +107,7 @@ class Model(PolicyModel):
 | 策略 / 模型 | 机器人本体 | 接入实现 |
 |---|---|---|
 | Wall-X (wall-oss-0.5) | ArtiXon Arm-6A | [`wall_oss_05_artixon_arm_6a_eef`](policies/wallx/wall_oss_05_artixon_arm_6a_eef/README.zh-CN.md) |
-| Wall-X | Quanta X1 | [`wallx_quanta_x1_whole_body`](policies/wallx/wallx_quanta_x1_whole_body/README.zh-CN.md) |
+| Wall-X-preview | Quanta X1 | [`wallx_quanta_x1_whole_body`](policies/wallx/wallx_quanta_x1_whole_body/README.zh-CN.md) |
 | OpenPI (π0.5) | ArtiXon Arm-6A | [`pi05_artixon_arm_6a_eef`](policies/openpi/pi05_artixon_arm_6a_eef/README.zh-CN.md) |
 | OpenPI (π0.5) | Quanta X1 | [`pi05_quanta_x1_whole_body`](policies/openpi/pi05_quanta_x1_whole_body/README.zh-CN.md) |
 | OpenPI (π0.5) | ArtiXon Arm-6A | [`pi05_artixon_arm_6a_joint`](policies/openpi/pi05_artixon_arm_6a_joint/README.zh-CN.md) |
