@@ -253,6 +253,93 @@ def test_retried_request_id_does_not_duplicate_history() -> None:
     assert model.observations == [7]
 
 
+@pytest.mark.parametrize("endpoint", ["ingest_observation", "infer_actions"])
+def test_reconnect_initialization_preserves_last_request_result(endpoint: str) -> None:
+    model = _RecordingModel()
+    server = PolicySpaceServer(model)
+    request = {"endpoint": endpoint, "frame": 7, "request_id": "operation-1"}
+    first = _FakeConnection(
+        [
+            {
+                "endpoint": "initialize_episode",
+                "episode_id": "episode-1",
+                "request_id": "initialize-1",
+            },
+            request,
+        ]
+    )
+    server._handle_client(first)
+
+    replacement = _FakeConnection(
+        [
+            {
+                "endpoint": "initialize_episode",
+                "episode_id": "episode-1",
+                "request_id": "initialize-2",
+                "resume_only": True,
+            },
+            request,
+        ]
+    )
+    server._handle_client(replacement)
+
+    assert _safe_unpackb(replacement.responses[1])["resumed"] is True
+    assert replacement.responses[2] == first.responses[2]
+    assert model.observations == [7]
+
+
+def test_retried_initialization_reports_current_resume_state() -> None:
+    model = _LifecycleModel()
+    server = PolicySpaceServer(model)
+    request = {
+        "endpoint": "initialize_episode",
+        "episode_id": "episode-1",
+        "request_id": "initialize-1",
+    }
+    first = _FakeConnection([request])
+    server._handle_client(first)
+    replacement = _FakeConnection([request])
+    server._handle_client(replacement)
+
+    assert _safe_unpackb(first.responses[1])["resumed"] is False
+    assert _safe_unpackb(replacement.responses[1])["resumed"] is True
+    assert model.initialize_count == 1
+
+
+@pytest.mark.parametrize("existing_episode", [None, "other-episode"])
+def test_exclusive_resume_only_does_not_create_or_supersede_episode(
+    existing_episode: str | None,
+) -> None:
+    model = _LifecycleModel()
+    server = PolicySpaceServer(model)
+    if existing_episode is not None:
+        server._handle_client(
+            _FakeConnection(
+                [{"endpoint": "initialize_episode", "episode_id": existing_episode}]
+            )
+        )
+    initialize_count = model.initialize_count
+    replacement = _FakeConnection(
+        [
+            {
+                "endpoint": "initialize_episode",
+                "episode_id": "missing-episode",
+                "resume_only": True,
+            },
+            {"endpoint": "infer_actions", "frame": 7},
+        ]
+    )
+    server._handle_client(replacement)
+
+    assert isinstance(replacement.responses[1], str)
+    assert "resume state is unavailable" in replacement.responses[1]
+    assert "No active episode" in replacement.responses[2]
+    assert model.initialize_count == initialize_count
+    assert model.finalize_count == 0
+    assert model.observations == []
+    assert server._active_episode_id == existing_episode
+
+
 @pytest.mark.parametrize(
     "endpoint", ["reset", "update_obs", "get_action", "get_action_batch", "close"]
 )
