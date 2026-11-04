@@ -1,4 +1,4 @@
-# This adapter loads Wall-X in-process. Install the public Wall-X inference
+# This adapter loads Wall-X in-process. Install the Wall-X inference
 # environment and its CUDA dependencies as documented by the Wall-X project,
 # then install Policy Space into that same environment. These are additional
 # dependencies used directly by this adapter; this file is not a replacement for

@@ -137,11 +137,11 @@ class Model(PolicyModel):
         super().__init__(cfg)
         knobs = _model_cfg(cfg)
         self._backend = (
-            str(_env_or(knobs, "WALLX_BACKEND", "backend", "public")).strip().lower()
+            str(_env_or(knobs, "WALLX_BACKEND", "backend", "standard")).strip().lower()
         )
-        if self._backend not in {"public", "internal"}:
+        if self._backend not in {"standard", "legacy"}:
             raise ValueError(
-                f"WallX backend must be 'public' or 'internal', got {self._backend!r}"
+                f"WallX backend must be 'standard' or 'legacy', got {self._backend!r}"
             )
         self._wallx_root = external_source_root(
             knobs,
@@ -270,13 +270,13 @@ class Model(PolicyModel):
         print(
             f"[WallX] action_dim={action_dim}, horizon={action_horizon}, timesteps={num_inference_timesteps}"
         )
-        if self._backend == "public":
+        if self._backend == "standard":
             if abs(cfg_scale - 1.0) > 1e-6 or any(
                 value is not None
                 for value in (cfg_uncond_instruction, cfg_uncond_metadata, cfg_drop)
             ):
                 raise ValueError(
-                    "The public Wall-X backend does not support these CFG options"
+                    "The standard Wall-X backend does not support these CFG options"
                 )
             from wall_x._vendor.harrix.serving._wallx_infer.infer_config import InferConfig
             from wall_x._vendor.harrix.serving.policy.wall_x_policy import WallXPolicy
@@ -381,7 +381,7 @@ class Model(PolicyModel):
 
     def runtime_metadata(self) -> dict[str, Any]:
         """Advertise RTC only when the loaded checkpoint was trained for it."""
-        if getattr(self, "_backend", "internal") == "public":
+        if getattr(self, "_backend", "legacy") == "standard":
             return {}
         config = self._policy.config
         train_config = getattr(config, "train_config", {}) or {}
@@ -467,11 +467,11 @@ class Model(PolicyModel):
         pass
 
     def _build_envelope(self, obs: dict[str, Any]) -> dict[str, Any]:
-        if getattr(self, "_backend", "internal") == "public" and (
+        if getattr(self, "_backend", "legacy") == "standard" and (
             obs.get("use_rtc")
             or any(obs.get(key) is not None for key in _RTC_REQUEST_KEYS[1:])
         ):
-            raise ValueError("The public Wall-X backend does not support RTC requests")
+            raise ValueError("The standard Wall-X backend does not support RTC requests")
         # Policy Space v2 normally uses `images`; accept `views` as well for
         # older multiplexed clients and make an empty visual payload explicit.
         images = obs.get("images") or obs.get("views") or {}
