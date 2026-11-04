@@ -6,11 +6,16 @@ This service loads a Wall-X checkpoint in-process and exposes the Policy Space v
 ManaEnv / client -> Policy Space service -> Wall-X policy
 ```
 
+The default `public` backend uses the public [Wall-X](https://github.com/X-Square-Robot/wall-x) serving implementation. Prepare the Wall-X inference environment and install Policy Space in that same environment; see the Wall-X README for its CUDA and model dependencies. The public checkpoint is available at [wall-oss-0.5](https://huggingface.co/x-square-robot/wall-oss-0.5). It does not require the private `x2robot_dataset` package. The public interface was verified against Wall-X commit `ce2a1ae31d9ee1028b97ca40e3f66034cf8c0e5f`.
+
+The `internal` backend retains compatibility with the existing private Wall-X runtime and requires its own dependencies. Select it explicitly with `WALLX_BACKEND=internal` or `model.cfg.backend: internal`. Non-default CFG options and Wall-X RTC are not supported by the public backend and are rejected instead of being silently ignored.
+
 ## Serve
 
 ```bash
 export WALLX_CHECKPOINT_PATH=/path/to/checkpoint
 export WALLX_ROOT=/path/to/wall-x
+export WALLX_BACKEND=public
 policy-space check policies/wallx/wall_oss_05_artixon_arm_6a_eef/deploy.yaml
 policy-space serve policies/wallx/wall_oss_05_artixon_arm_6a_eef/deploy.yaml --port 8001
 ```
