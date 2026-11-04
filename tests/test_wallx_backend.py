@@ -1,4 +1,4 @@
-"""Compatibility checks for the public Wall-X 1.1 serving interface."""
+"""Compatibility checks for the standard Wall-X 1.1 serving interface."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import pytest
 from policies.wallx.wall_oss_05_artixon_arm_6a_eef.model import Model
 
 
-def _install_public_wallx(monkeypatch: pytest.MonkeyPatch) -> None:
+def _install_standard_wallx(monkeypatch: pytest.MonkeyPatch) -> None:
     config_module = types.ModuleType(
         "wall_x._vendor.harrix.serving._wallx_infer.infer_config"
     )
@@ -55,11 +55,11 @@ def _install_public_wallx(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, policy_module.__name__, policy_module)
 
 
-def test_public_backend_loads_and_infers_without_internal_dataset(
+def test_standard_backend_loads_and_infers_without_legacy_dataset(
     monkeypatch, tmp_path
 ):
     monkeypatch.delenv("X2ROBOT_ID_CONFIG_PATH", raising=False)
-    _install_public_wallx(monkeypatch)
+    _install_standard_wallx(monkeypatch)
     model = Model(
         {
             "wallx_root": str(tmp_path),
@@ -84,26 +84,26 @@ def test_public_backend_loads_and_infers_without_internal_dataset(
     "knob",
     [{"cfg_scale": 2.0}, {"cfg_drop": "state"}, {"cfg_uncond_instruction": "empty"}],
 )
-def test_public_backend_rejects_unsupported_cfg(monkeypatch, tmp_path, knob):
-    _install_public_wallx(monkeypatch)
-    with pytest.raises(ValueError, match="public.*CFG"):
+def test_standard_backend_rejects_unsupported_cfg(monkeypatch, tmp_path, knob):
+    _install_standard_wallx(monkeypatch)
+    with pytest.raises(ValueError, match="standard.*CFG"):
         Model(
             {
                 "wallx_root": str(tmp_path),
                 "checkpoint_path": "checkpoint",
-                "backend": "public",
+                "backend": "standard",
                 **knob,
             }
         )
 
 
-def test_public_backend_rejects_rtc_requests(monkeypatch, tmp_path):
-    _install_public_wallx(monkeypatch)
+def test_standard_backend_rejects_rtc_requests(monkeypatch, tmp_path):
+    _install_standard_wallx(monkeypatch)
     model = Model(
         {
             "wallx_root": str(tmp_path),
             "checkpoint_path": "checkpoint",
-            "backend": "public",
+            "backend": "standard",
         }
     )
     with pytest.raises(ValueError, match="RTC"):
@@ -115,7 +115,7 @@ def test_public_backend_rejects_rtc_requests(monkeypatch, tmp_path):
         )
 
 
-def test_internal_backend_keeps_legacy_loading(monkeypatch, tmp_path):
+def test_legacy_backend_keeps_legacy_loading(monkeypatch, tmp_path):
     for name in (
         "x2robot_dataset",
         "wall_x",
@@ -143,7 +143,7 @@ def test_internal_backend_keeps_legacy_loading(monkeypatch, tmp_path):
         {
             "wallx_root": str(tmp_path),
             "checkpoint_path": "checkpoint",
-            "backend": "internal",
+            "backend": "legacy",
             "cfg_drop": "state",
         }
     )
