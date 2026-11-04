@@ -341,7 +341,11 @@ class PolicySpaceServer:
                         raise RuntimeError(
                             "No active episode. Call initialize_episode first."
                         )
-                    if request_id and request_id == self._last_request_id:
+                    # Initialization negotiates the current episode state on
+                    # every connection. It must neither replay a stale resume
+                    # flag nor replace the operation result a reconnect retries.
+                    cacheable = endpoint != "initialize_episode"
+                    if cacheable and request_id and request_id == self._last_request_id:
                         response = self._last_response
                     else:
                         response = self._dispatch(
@@ -349,7 +353,7 @@ class PolicySpaceServer:
                             request,
                             observation_buffered=self._observation_buffered,
                         )
-                        if request_id:
+                        if cacheable and request_id:
                             # Store the result before sending it. If the reply is
                             # lost, a reconnect can retry the same request id
                             # without applying the observation or inference twice.
@@ -571,6 +575,10 @@ class PolicySpaceServer:
                             "reconnect schema pair does not match the active episode"
                         )
                 return {"ok": True, "resumed": True}
+            if payload.get("resume_only") is True:
+                raise RuntimeError(
+                    f"Episode {episode_id!r} resume state is unavailable"
+                )
             selected_schema_pair = self._resolve_schema_pair(payload)
             if self._active_episode_id is not None:
                 self.model.finalize_episode(
