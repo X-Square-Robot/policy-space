@@ -13,6 +13,9 @@ model:
   module: policy_space.wallx_wall_oss_05.model
   class: Model
   cfg:
+    # Public Wall-X 1.1 serving interface; use internal only with the
+    # compatible private Wall-X and x2robot_dataset environments.
+    backend: "public"
     # Required unless WALLX_ROOT is set.
     wallx_root: ""
     # Required: path to wallx checkpoint (or set WALLX_CHECKPOINT_PATH env var)
@@ -38,7 +41,7 @@ model:
     # Set WALLX_IMAGE_WIRE_ENCODING=jpeg95 only for legacy comparisons.
     image_wire_encoding: "lossless_png"
     jpeg_quality: 95
-    # CFG (optional, default off)
+    # Non-default CFG options are supported by the internal backend only.
     cfg_scale: 1.0
     # cfg_uncond_instruction: null
     # cfg_uncond_metadata: null

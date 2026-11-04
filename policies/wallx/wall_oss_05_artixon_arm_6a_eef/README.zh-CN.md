@@ -6,11 +6,16 @@
 ManaEnv / 客户端 -> Policy Space service -> Wall-X policy
 ```
 
+默认的 `public` 后端使用[开源 Wall-X](https://github.com/X-Square-Robot/wall-x) 的推理接口。按 Wall-X README 准备推理环境和 CUDA 依赖，并在同一环境中安装 Policy Space；公开权重见 [wall-oss-0.5](https://huggingface.co/x-square-robot/wall-oss-0.5)。该后端不需要私有 `x2robot_dataset` 包。公开接口的验证版本为 Wall-X commit `ce2a1ae31d9ee1028b97ca40e3f66034cf8c0e5f`。
+
+`internal` 后端保留对原内部 Wall-X 推理环境的兼容，需要安装该环境自己的依赖；通过 `WALLX_BACKEND=internal` 或 `model.cfg.backend: internal` 显式选择。开源后端不支持非默认 CFG 和 Wall-X RTC，传入这些选项时会明确报错。
+
 ## 启动
 
 ```bash
 export WALLX_CHECKPOINT_PATH=/path/to/checkpoint
 export WALLX_ROOT=/path/to/wall-x
+export WALLX_BACKEND=public
 policy-space check policies/wallx/wall_oss_05_artixon_arm_6a_eef/deploy.yaml
 policy-space serve policies/wallx/wall_oss_05_artixon_arm_6a_eef/deploy.yaml --port 8001
 ```
