@@ -1,0 +1,19 @@
+policy_name: wallx_api
+model:
+  class: Model
+  cfg:
+    gripper: H
+    timeout_s: 90
+server:
+  host: 127.0.0.1
+  port: 18862
+  session_mode: exclusive
+metadata:
+  supported_schema_pairs:
+    - observation_schema: bimanual_rgb_ee@1
+      action_schema: bimanual_ee_absolute@1
+      embodiment_constraints: [ex001_6r@1]
+  action_dim: 14
+  action_mode: ik_eef_abs
+  action_horizon: 33
+  gripper_convention: normalized_01
